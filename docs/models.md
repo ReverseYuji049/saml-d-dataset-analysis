@@ -1,32 +1,12 @@
-# Anti Money Laudering Transaction Dataset (SAML-D)
-Link: https://www.kaggle.com/datasets/berkanoztas/synthetic-transaction-monitoring-dataset-aml/data
 
-## Estrutura
-O dataset SAML-D possui aproximadamente **9,5 milhões de transações**, **12 colunas** e cerca de **9.873 registros positivos de lavagem de dinheiro** (~0,104% do conjunto).
+# MODELOS APLICADOS
 
-| Coluna | O que representa | O que estudar |
-| :--- | :---: | ---: |
-| Time | Horário da transação | Conversão para horário e análise temporal |
-| Date | Data da transação | Datas, períodos e ordenação |
-| Sender_account | Conta remetente | Recorrência e comportamento de envio |
-| Receiver_account | Conta destinatária | Recorrência e comportamento de recebimento |
-| Amount | Valor da transação | Distribuição, assimetria e valores extremos |
-| Payment_currency | Moeda do pagamento | Variáveis categóricas |
-| Received_currency	| Moeda recebida | Conversões e diferenças de moeda |
-|Sender_bank_location | Localização bancária do remetente	| Comparações por localização |
-| Receiver_bank_location | Localização bancária do destinatário | Operações entre localizações |
-| Payment_type | Tipo de pagamento | Frequências e padrões |
-| Is_laundering | Indicador de lavagem de dinheiro | Variável-alvo para classificação |
-| Laundering_type | Tipo de comportamento identificado | Análise das categorias, com cuidado para não vazar o alvo |  
-
-## Modelos
-
-### Dummy Classifier
+## 1. Dummy Classifier
 O [Dummy Classifier](https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html) é um classificador simples que utiliza estratégias básicas para realizar previsões, sem aprender relações relevantes entre as **características (*features*)** dos dados.
 
 Ela serve como uma referência para avaliar se os modelos mais complexos estão realmente aprendendo algo.
 
-#### Como funciona?
+### 1.1. Como funciona?
 O `Dummy Classifier` possui diferentes estratégias, definidas pelo parâmetro `strategy`.
 - `most_frequent`: Sempre prevê a classe mais frequente.
 - `prior`: Prevê a classe mais frequente e utiliza as frequências observadas para calcular possibilidades. 
@@ -34,14 +14,14 @@ O `Dummy Classifier` possui diferentes estratégias, definidas pelo parâmetro `
 - `uniform`: Escolhe as classes aleatoriamente, com probabilidades iguais.
 - `constant`: Sempre prevê uma classe específica definida pelo usuário.
 
-#### Quando utilizar?
+### 1.2. Quando utilizar?
 O `DummyClassifier` é recomendado para quando se deseja estabelecer uma **referência de desempenho**.
 
 Por exemplo, se ambos os modelos de `RandomForest` e o `Dummy Classifier` conseguirem 99% de acurácia, pode ser que o modelo mais complexo não esteja aprendendo padrões úteis.
 
 A ideia é que os modelos desenvolvidos posteriormente consigam **superar a base de referência (*baseline*)** significativamente, especialmente nas métricas relacionadas à identificação de fraudes.
 
-#### Caso de Exemplo: Dataset Bancário
+### 1.3. Caso de Exemplo: Dataset Bancário
 - 99% de transações legítimas.
 - 1% de transações fraudulentas
 
@@ -51,10 +31,10 @@ O modelo não tenta descobrir padrões que expliquem por que determinada transa�
 
 Com a estratégia `most_frequent`, se o treinamento aprensetar 99% de transações legítimas, todas as previsões serão de transações legítimas.
 
-### Logistic Regression
+### 2. Logistic Regression
 O `Logistic Regression` é utilizado para **problemas de classificação**, com o objetivo de **estimar a possibilidade de uma observação pertencer a determinada classe**.
 
-#### Como funciona?
+### 2.1. Como funciona?
 A `Logistic Regression` trabalha com uma **combinação linear das características de entrada**:
 
 $$ z = w_1x_1 + w_2x_2 + \dots + w_nx_n + b $$
@@ -82,7 +62,7 @@ $$ sigma(z)=\frac{1}{1+e^{-z}} $$
 
 O modelo utiliza essas probabilidades para decidir a classificação.
 
-#### Como ocorre o aprendizado?
+### 2.2. Como ocorre o aprendizado?
 
 Durante o treinamento, o algoritmo **ajusta os pesos e o intercepto (*bias*)** para aproximar suas previsões dos resultados reais.
 
@@ -90,7 +70,7 @@ Ele utiliza uma **função de otimização** baseada na *log loss* (perda logar�
 
 Ou seja, o modelo busca **encontrar pesos que produzam probabilidades coerentes com os exemplos de treinamento**.
 
-#### Principais parâmetros
+### 2.3. Principais parâmetros
 
 1 - `C`: controla a intensidade da regularização inversamente:
 - `c`: regularização mais forte
@@ -112,7 +92,7 @@ Ajuda a controlar a **complexidade do modelo** e a **reduzir o risco de *overfit
 
 7 - `fit_intercept`: define se o modelo utilizará intercepto (*bias*).
 
-#### Quando utilizar?
+### 2.4. Quando utilizar?
 A `Logistic Regression` é recomendada para quando queremos:
 - Trabalhar com classificação binária ou multiclasse.
 
@@ -128,7 +108,7 @@ A `Logistic Regression` é recomendada para quando queremos:
 - É recomendado padronizar as características numéricas, principalmente quando possuem escalas muito diferentes.
 
 
-### RandomForestClassifier
+## 3. RandomForestClassifier
 O [RandomForest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html) é um algoritmo de classificação baseado em um conjunto de **árvores de decisão**. 
 
 Pertence à uma categoria de algoritmos **Ensemble Learning**, que consiste na **combinação de múltiplos modelos para produzir uma previsão conjunta**. 
@@ -143,7 +123,7 @@ Em vez de depender de apenas uma árvore de decisão, o `Random Forest` constró
 
 A previsão final será legítima, pois essa classe recebeu a maioria dos votos. Esse processo é conhecido como **votação majoritária** (*majority voting*).
 
-#### Como funciona?
+### 3.1. Como funciona?
 
 **1 - Árvore de Decisão**
 
@@ -163,7 +143,7 @@ As perguntas poderiam ser:
 
 Dependendo das respostas, a árvore percorre diferentes caminhos até chegar a uma classificação. Cada divisão representa uma condição utilizada para separar os dados.
 
-**1.1 - Construção da Random Forest**
+**3.1.1 - Construção da Random Forest**
 
 O `Random Forest` utiliza diversas árvores de decisão, construídas com duas características fundamentais:
 
@@ -179,7 +159,7 @@ O `Random Forest` utiliza diversas árvores de decisão, construídas com duas c
 
 - Isso introduz diversidade entre as árvores, não precisando aprender exatamente os mesmos padrões.
 
-**1.2 - Votação Final**
+**3.1.2 - Votação Final**
 
 Depois da construção das árvores de decisão, cada uma realiza sua própria previsão. O `Random Forest` combina os resultados e escolhe a classe com maior votação:
 
@@ -189,7 +169,7 @@ Fonte da imagem: https://www.researchgate.net/figure/Typical-Random-Forest-class
 
 Além da classificação, o Random Forest pode estimar probabilidade utilizando a média das probabilidades previstas pelas árvores individuais.
 
-#### Principais parâmetros
+### 3.2. Principais parâmetros
 
 - `n_estimators`: quantidade de árvores na floresta.
 
@@ -220,7 +200,7 @@ Além da classificação, o Random Forest pode estimar probabilidade utilizando 
 
 - `n_jobs`: quantidade de processos utilizados em paralelo.
 
-#### Quando utilizar?
+### 3.3. Quando utilizar?
 
 O `Random Forest` é interessante nos seguintes casos:
 
@@ -232,7 +212,7 @@ O `Random Forest` é interessante nos seguintes casos:
 
 Diferente da `Logistic Regression`, não necessita de padronização de features numéricas.
 
-### Lighting Gradiente Boosting Machine (LightGBM)
+## 4. Lighting Gradiente Boosting Machine (LightGBM)
 
 O [LightGBM](https://lightgbm.readthedocs.io/en/stable/) é um **framework de Machien Learning** desenvolvido pela **Microsoft** que utiliza **algoritmos de Gradient Boosting** baseado em `Gradient Boosting Decision Tress (GBDT)`.
 
@@ -240,7 +220,7 @@ Ele utiliza conjuntos de árvores de decisão para resolver problemas de **class
 
 Para entender o `LightGBM`, precisamos conhecer dois conceitos: `Decision Tree` (Árvore de Decisão) e `Gradient Boosting` (Impulsionamento por Gradiente).
 
-#### Como funciona o Gradient Boosting?
+### 4.1. Como funciona o Gradient Boosting?
 
 A ideia principal do `Gradient Boosting` é combinar vários modelos de aprendizado, geralmente **árvores de decisão**, para construir um modelo preditivo mais preciso. 
 
@@ -263,7 +243,7 @@ $$ F_m(x)=F_{m-1}(x)+\eta h_m(x) $$
 
 **5. Repetição do Processo:** O algoritmo repete as etapas de calcular os erros, treinar novas árvores e atualizar as previsões. Ao final, todas as árvores são combinadas para produzir uma previsão.
 
-#### O que diferencia o LightGBM de outros Gradient Boosting?
+### 4.2. O que diferencia o LightGBM de outros Gradient Boosting?
 O `LightGBM` foi desenvolvido para oferecer eficiência computacional e escalabilidade, especialmente em datasets grandes.
 
 **1. `Leaf-wise Growth`:** A estratégia *`leaf-wise`* faz com que o algoritmo procura dividir a folha que apresenta a maior redução da função de perda.
@@ -281,12 +261,12 @@ Essa estratégia pode produzir árvores mais eficientes, mas também pode aument
 
 - Isso reduz o custo computacional e o consumo de memória em muitos cenários.
 
-**3 - GOSS e EFB:** 
-- **Gradient-based One-Side Sampling (GOSS):** Prioriza amostras com gradientes maiores, preservando também uma parcela das amostras com gradientes menores. A intenção é reduzir o volume de dados utilizado para encontrar divisões sem perder informações importantes.
+**3 - `GOSS e EFB`:** 
+- `Gradient-based One-Side Sampling (GOSS):` Prioriza amostras com gradientes maiores, preservando também uma parcela das amostras com gradientes menores. A intenção é reduzir o volume de dados utilizado para encontrar divisões sem perder informações importantes.
 
-- **Exclusive Feature Bundling (EFB):** Combina características que raramente apresentam valores diferentes de zero simultaneamente, reduzindo a quantidade de características efetivamente processadas. 
+- `Exclusive Feature Bundling (EFB):` Combina características que raramente apresentam valores diferentes de zero simultaneamente, reduzindo a quantidade de características efetivamente processadas. 
 
-#### Principais Parâmetros
+### 4.3. Principais Parâmetros
 
 - `n_estimators`: quantidade de árvores construídas durante o processo de `Gradient Boosting`.
 
@@ -331,7 +311,7 @@ Essa estratégia pode produzir árvores mais eficientes, mas também pode aument
 
     $$scale\_pos\_weight=\frac{N_{\text{negativos}}}{N_{\text{positivos}}}$$
 
-#### Quando utilizar?
+### 4.4. Quando utilizar?
 
 O `LightGBM` é recomendado para quando:
 
@@ -342,7 +322,7 @@ O `LightGBM` é recomendado para quando:
 - Queremos explorar diferentes configurações de hiperparâmetros.
 - Precisamos de um modelo competitivo para classificação de fraudes.
 
-#### Importação
+### 4.5. Importação
 
 **Instalando a biblioteca:**
 
@@ -352,7 +332,7 @@ O `LightGBM` é recomendado para quando:
 
     from lightgbm import LGBMClassifier
 
-### Comparação entre os Modelos
+## 5. Comparação entre os Modelos
 
 | Característica | DummyClassifier | LogisticRegression | RandomForest | LightGBM |
 | :--: | :--: | :--: | :--: | :--: |
@@ -386,7 +366,7 @@ O `LightGBM` é recomendado para quando:
 
 4. `DummyClassifier`: não aprende padrões a partir de features.
 
-#### Aplicação no SAML-D
+### 6. Aplicação no SAML-D
 
 | Modelo | Aplicação no sistema | O que esperamos dele? |
 | :--: | :--: | :-- |
@@ -394,4 +374,3 @@ O `LightGBM` é recomendado para quando:
 | LogisticRegression | Classificação inicial | Identificar relações lineares entre as características e a ocorrência de lavagem de dinheiro |
 | RandomForest | Identificação de padrões | Identificar combinações de características associadas a operações suspeitas |
 | LightGBM | Classificação avançada | Aprender interações e padrões complexos, buscando melhorar a identificação de operações suspeitas |
- 
