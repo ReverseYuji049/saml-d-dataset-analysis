@@ -2,3 +2,6 @@ SAML-D.csv
 links.md
 
 .venv/
+image/
+model_completo.ipynb
+/datasets
